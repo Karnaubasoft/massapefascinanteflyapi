@@ -1,0 +1,105 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Category {
+  RESTAURANT
+  HOTEL
+  TOURIST_ATTRACTIONS
+  LANDSCAPE
+  HOSTING
+}
+
+model TaxiDriver {
+  id        String  @id
+  name       String
+  photoURLs String
+  phone    String
+  workingDescription String
+  cityId     String
+  city       City?   @relation(fields: [cityId], references: [id])
+}
+
+model Admin {
+  id         String  @id
+  name       String
+  email      String  @unique
+  password   String?
+  googleId   String? @unique
+  cityId     String? @unique
+  city       City?
+  authorized Boolean @default(false)
+}
+
+model City {
+  id          String  @id
+  name        String
+  location    String
+  description String
+  photos      Photo[]
+  instagram   String?
+  places      Place[]
+  events      Event[]
+  adminId     String  @unique
+  admin       Admin   @relation(fields: [adminId], references: [id])
+  taxiDrivers TaxiDriver[]
+}
+
+model Place {
+  id          String   @id
+  name        String
+  phone       String?
+  instagram   String?
+  location    String
+  latitude    Float?
+  longitude   Float?
+
+  description String
+  photos      Photo[]
+  category    Category
+  cityId      String
+  city        City     @relation(fields: [cityId], references: [id])
+  rooms       Room[]
+}
+
+model Room {
+  id          String   @id
+  price       Float
+  available   Boolean @default(true)
+  placeId     String
+  place       Place    @relation(fields: [placeId], references: [id])
+  photoURLs   String[]
+  description String?
+}
+
+model Event {
+  id          String   @id
+  name        String
+  date        DateTime
+  location    String
+  lastDate    DateTime
+  active      Boolean
+  instagram   String?
+  description String
+  photos      Photo[]
+  cityId      String
+  city        City     @relation(fields: [cityId], references: [id])
+}
+
+model Photo {
+  id     String  @id
+  url    String
+  cityId String?
+  city   City?   @relation(fields: [cityId], references: [id])
+
+  placeId String?
+  place   Place?  @relation(fields: [placeId], references: [id])
+
+  eventId String?
+  event   Event?  @relation(fields: [eventId], references: [id])
+}

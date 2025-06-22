@@ -1,0 +1,34 @@
+import { PlaceCreatePhotoUseCase } from "../../../use-cases/place/photo/placeCreatePhotoUseCase";
+import { PlaceCreateUseCase } from "../../../use-cases/place/placeCreateUseCase";
+import { PlaceDeletePhotoUseCase } from "../../../use-cases/place/photo/placeDeletePhotoUseCase";
+import { PlaceDeleteUseCase } from "../../../use-cases/place/placeDeleteUseCase";
+import { PlaceFindAllUseCase } from "../../../use-cases/place/placeFindAllUseCase";
+import { PlaceFindCategoryUseCase } from "../../../use-cases/place/placeFindCategoryUseCase";
+import { PlaceFindUniqueUseCase } from "../../../use-cases/place/placefindUniqueUseCase";
+import { PlaceUpdatePhotoUseCase } from "../../../use-cases/place/photo/placeUpdatePhotoUseCase";
+import { PlaceUpdateUseCase } from "../../../use-cases/place/placeUpdateUseCase";
+import { IPrismaCityRepository } from "../../database/IPrismaCityRepository";
+import { IPrismaPlaceRepository } from "../../database/IPrismaPlaceRepository";
+import { PhotoStorageService } from "../../services/photoStorageService";
+import { PlaceController } from "../controllers/placeController";
+import { Multipart } from "../plugins/multipart";
+import { IPrismaAdminReposotory } from "../../database/IPrismaAdminRepository";
+import { PlaceGetRelatedPlacesByIdUseCase } from "../../../use-cases/place/placegetRelatedPlacesByIdUseCase";
+
+const prismaPlaceRepository = new IPrismaPlaceRepository();
+const photoStorage = new PhotoStorageService();
+const prismaCityRepository = new IPrismaCityRepository();
+const prismaAdminRepository = new IPrismaAdminReposotory();
+const multipart = new Multipart(photoStorage);
+const createPlaceUseCase = new PlaceCreateUseCase(prismaPlaceRepository, prismaCityRepository, prismaAdminRepository);
+const updatePlaceUseCase = new PlaceUpdateUseCase(prismaPlaceRepository, prismaCityRepository);
+const deletePlaceUseCase = new PlaceDeleteUseCase(prismaPlaceRepository, prismaCityRepository);
+const findByCategoryUseCase = new PlaceFindCategoryUseCase(prismaPlaceRepository);
+const findUniqueUseCase = new PlaceFindUniqueUseCase(prismaPlaceRepository, prismaCityRepository);
+const findAllUseCase = new PlaceFindAllUseCase(prismaPlaceRepository);
+const updatePhotoUseCase = new PlaceUpdatePhotoUseCase(prismaPlaceRepository);
+const createPhotoUseCase = new PlaceCreatePhotoUseCase(prismaPlaceRepository);
+const deletePhotoUseCase = new PlaceDeletePhotoUseCase(prismaPlaceRepository);
+const getRelatedPlacesByIdUseCase = new PlaceGetRelatedPlacesByIdUseCase(prismaPlaceRepository);
+
+export const placeInstance = new PlaceController(multipart, createPlaceUseCase, updatePlaceUseCase, deletePlaceUseCase, findByCategoryUseCase, findUniqueUseCase, findAllUseCase, updatePhotoUseCase, createPhotoUseCase, deletePhotoUseCase, getRelatedPlacesByIdUseCase);
