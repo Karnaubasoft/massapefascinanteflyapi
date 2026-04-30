@@ -1,27 +1,50 @@
-FROM node:22.1.0-slim
+FROM node:20-bookworm-slim AS base
+
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends openssl \
+  && rm -rf /var/lib/apt/lists/*
+
+RUN corepack enable \
+  && corepack prepare pnpm@10.6.3 --activate
 
 WORKDIR /app
 
-# Instala dependências do sistema
-RUN apt-get update -y && apt-get install -y openssl libssl-dev
+FROM base AS deps
 
-# Instala pnpm
-RUN npm install -g pnpm
+COPY package.json pnpm-lock.yaml ./
+RUN pnpm install --frozen-lockfile
 
-# Copia apenas arquivos de dependência primeiro para aproveitar cache
-COPY package.json pnpm-lock.yaml* ./
+FROM base AS build
 
-# Instala dependências
-RUN pnpm install
+COPY --from=deps /app/node_modules ./node_modules
+COPY package.json pnpm-lock.yaml tsconfig.json ./
+COPY prisma ./prisma
+COPY src ./src
 
-# Copia todo o restante do projeto (depois das dependências)
-COPY . .
-
-# Gera o Prisma Client
 RUN pnpm exec prisma generate
+RUN pnpm build
 
-# Expõe a porta da API
-EXPOSE 3333
+FROM base AS prod-deps
 
-# Roda o projeto
-CMD ["pnpm", "run", "dev"]
+COPY --from=deps /app/node_modules ./node_modules
+COPY package.json pnpm-lock.yaml ./
+RUN pnpm prune --prod
+
+FROM base AS runtime
+
+ENV NODE_ENV=production
+ENV PORT=3000
+
+WORKDIR /app
+
+COPY --from=prod-deps /app/node_modules ./node_modules
+COPY --from=build /app/dist ./dist
+COPY --from=build /app/package.json ./package.json
+COPY --from=build /app/prisma ./prisma
+
+EXPOSE 3000
+
+CMD ["sh", "-c", "pnpm exec prisma migrate deploy && node dist/infra/http/server.js"]
