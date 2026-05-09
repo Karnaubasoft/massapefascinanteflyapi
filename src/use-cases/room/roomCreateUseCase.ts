@@ -28,8 +28,7 @@ export class RoomCreateUseCase {
         if (category === "HOSTING" && roomCount >= 1) throw new ServerError("HOSTING places can have only one room", 409);
 
         const id = randomUUID();
-        const room = new Room(id, price, available, placeId, photoURLs, description);
-        console.log(room)
+        const room = new Room(id, price, available, placeId, photoURLs, description ?? null);
 
         await this.roomRepository.createRoom(room);
         return room;
