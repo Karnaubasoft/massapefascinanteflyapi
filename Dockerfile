@@ -15,6 +15,7 @@ WORKDIR /app
 FROM base AS deps
 
 COPY package.json pnpm-lock.yaml ./
+COPY prisma ./prisma
 RUN pnpm install --frozen-lockfile --prod=false
 
 FROM base AS build
@@ -31,7 +32,9 @@ FROM base AS prod-deps
 
 COPY --from=deps /app/node_modules ./node_modules
 COPY package.json pnpm-lock.yaml ./
-RUN pnpm prune --prod
+COPY prisma ./prisma
+RUN pnpm prune --prod \
+  && pnpm exec prisma generate
 
 FROM base AS runtime
 

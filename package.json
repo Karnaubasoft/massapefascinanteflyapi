@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "tsx src/infra/http/server.ts",
     "build": "tsc",
-    "start": "node dist/infra/http/server.js"
+    "start": "node dist/infra/http/server.js",
+    "postinstall": "prisma generate"
   },
   "keywords": [],
   "author": "",
