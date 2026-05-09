@@ -7,8 +7,6 @@ export class TaxiDriverFindAllUseCase {
 
     async execute() {
         const taxiDrivers = await this.taxiDriverRepository.getAllTaxiDriversByCityId();
-        if (!taxiDrivers || taxiDrivers.length === 0) throw new Error("No taxi drivers found");
-
-        return taxiDrivers;
+        return taxiDrivers ?? [];
     }
 }
