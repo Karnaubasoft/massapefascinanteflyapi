@@ -139,7 +139,7 @@ export function deleteEvent(fastify: FastifyInstance) {
 }
 
 export function findUniqueEvent(fastify: FastifyInstance) {
-    fastify.get('/event/:id', {
+    const eventByIdSchema = {
         schema: {
             tags: ['Event'],
             summary: 'Find an event by ID',
@@ -167,7 +167,10 @@ export function findUniqueEvent(fastify: FastifyInstance) {
                 }
             }
         }
-    }, (req, res) => eventInstance.findUnique({ req, res }));
+    };
+
+    fastify.get('/event/:id', eventByIdSchema, (req, res) => eventInstance.findUnique({ req, res }));
+    fastify.get('/events/:id', eventByIdSchema, (req, res) => eventInstance.findUnique({ req, res }));
 }
 
 export function findAllEvent(fastify: FastifyInstance) {

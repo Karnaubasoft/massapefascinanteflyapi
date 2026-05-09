@@ -16,6 +16,7 @@ export function findAvailableRooms(fastify: FastifyInstance){
 
 export function findUniqueRoom(fastify: FastifyInstance){
     fastify.get("/room/:id", (req, res) => roomInstance.findUnique({req, res}));
+    fastify.get("/rooms/:id", (req, res) => roomInstance.findUnique({req, res}));
 }
 
 export function updateRoom(fastify: FastifyInstance){

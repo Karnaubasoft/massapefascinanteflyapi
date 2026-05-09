@@ -13,6 +13,7 @@ export function findAllTaxiDrivers(fastify: FastifyInstance){
 
 export function findUniqueTaxiDriver(fastify: FastifyInstance){
     fastify.get("/taxi-driver/:id", (req, res) => taxiDriverInstance.findUnique({req, res}));
+    fastify.get("/taxi-drivers/:id", (req, res) => taxiDriverInstance.findUnique({req, res}));
 }
 
 export function updateTaxiDriver(fastify: FastifyInstance){
@@ -22,4 +23,3 @@ export function updateTaxiDriver(fastify: FastifyInstance){
 export function deleteTaxiDriver(fastify: FastifyInstance){
     fastify.delete("/taxi-driver/:id", {preHandler: authMiddleware}, (req, res) => taxiDriverInstance.delete({req, res}));
 }
-

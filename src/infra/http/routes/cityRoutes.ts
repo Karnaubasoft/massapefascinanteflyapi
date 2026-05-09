@@ -194,7 +194,7 @@ export function cityFindUnique(fastify: FastifyInstance){
 }
 
 export function cityFindMany(fastify: FastifyInstance){
-    fastify.get('/citys', {
+    const cityListSchema = {
         schema: {
             summary: 'Find all cities',
             description: 'This endpoint allows you to find all cities.',
@@ -236,7 +236,10 @@ export function cityFindMany(fastify: FastifyInstance){
                 },
             }
         }
-    },(req, res) => cityInstance.findAllCity({req, res}))
+    };
+
+    fastify.get('/citys', cityListSchema, (req, res) => cityInstance.findAllCity({req, res}))
+    fastify.get('/cities', cityListSchema, (req, res) => cityInstance.findAllCity({req, res}))
 }
 
 export function cityUpdatePhoto(fastify: FastifyInstance){
