@@ -55,6 +55,7 @@ server.register(fastifySwaggerUi, {
     }
 });
 server.register(registerRoutes);
+server.register(registerRoutes, { prefix: "/api" });
 
 server.get('/', (req: FastifyRequest, res: FastifyReply) =>{
     res.send('Bem vindo a API da Massape Fascinante')
